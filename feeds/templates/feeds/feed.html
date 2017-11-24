@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% load humanize %}
+
+{% block title %} {% trans 'Feed' %} {% endblock title %}
+
+{% block head %}
+    <link href="{% static 'css/feeds.css' %}" ref="stylesheet">
+    <script src="{% static 'js/jquery.bullseye-1.0-min.js' %}"></script>
+    <script src="{% static 'js/feeds.js' %}"></script>
+{% endblock head %}
+
+{% block main %}
+    <div class="page-header">
+        <h1>Feed</h1>
+    </div>
+    <ul class="streem">
+        {% include 'feeds/partial_feed.html' with feed=feed %}
+    </ul>
+{% endblock main %}
