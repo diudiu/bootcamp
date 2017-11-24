@@ -62,6 +62,18 @@ class Article(models.Model):
 
         return tag_dict.items()
 
+    def get_summary(self):
+        if len(self.content) > 255:
+            return '{0}...'.format(self.content[:255])
+        else:
+            return self.content
+
+    def get_summary_as_markdown(self):
+        return markdown.markdown(self.get_summary())
+
+    def get_comments(self):
+        return ArticleComment.objects.filter(article=self)
+
 
 @python_2_unicode_compatible
 class ArticleComment(models.Model):
@@ -80,4 +92,3 @@ class ArticleComment(models.Model):
 
     def get_comment_as_markdown(self):
         return markdown.markdown(self.comment, safe_mode='escape')
-

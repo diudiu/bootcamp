@@ -30,9 +30,12 @@ urlpatterns = [
     url(r'^signup/$', bootcamp_auth_views.signup, name='signup'),
 
     url(r'^feeds/', include('feeds.urls')),
+    url(r'^articles/', include('articles.urls')),
 
 
     url(r'^notifications/$', activities_views.notifications, name='notifications'),
     url(r'^notifications/last/$', activities_views.last_notifications, name='last_notifications'),
     url(r'^notifications/check/$', activities_views.ckeck_notifications, name='check_notifications'),
+
+    url(r'^(?P<username>[^/]+)/$', core_views.profile, name='profile'),
 ]
