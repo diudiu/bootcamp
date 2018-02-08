@@ -27,9 +27,9 @@ class Article(models.Model):
     status = models.CharField(max_length=1, choices=STATUS, default=DRAFT)
     create_user = models.ForeignKey(User)
     create_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
     update_user = models.ForeignKey(User, null=True, blank=True,
-                                    related_name='+')
+                                    related_name="+")
 
     class Meta:
         verbose_name = _('Article')
@@ -69,7 +69,7 @@ class Article(models.Model):
             return self.content
 
     def get_summary_as_markdown(self):
-        return markdown.markdown(self.get_summary())
+        return markdown.markdown(self.get_summary(), safe_mode='escape')
 
     def get_comments(self):
         return ArticleComment.objects.filter(article=self)

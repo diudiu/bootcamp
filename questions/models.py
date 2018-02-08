@@ -33,6 +33,63 @@ class Question(models.Model):
     def get_unanswered():
         return Question.objects.filter(has_accepted_answer=False)
 
+    @staticmethod
+    def get_answered():
+        return Question.objects.filter(has_accepted_answer=True)
+
+    def get_answers(self):
+        return Answer.objects.filter(question=self)
+
+    def get_answers_count(self):
+        return Answer.objects.filter(question=self).count()
+
+    def get_accepted_answer(self):
+        return Answer.objects.get(question=self, is_accepted=True)
+
+    def get_description_as_markdown(self):
+        return markdown.markdown(self.description, safe_mode='escape')
+
+    def get_description_preview(self):
+        if len(self.description) > 255:
+            return '{0}...'.format(self.description[:255])
+        else:
+            return self.description
+
+    def get_description_preview_as_markdown(self):
+        return markdown.markdown(self.get_description_preview(),
+                                 safe_mode='escape')
+
+    def calculate_favorites(self):
+        favorites = Activity.objects.filter(activity_type=Activity.FAVORITE,
+                                            question=self.pk).count()
+        self.favorites = favorites
+        self.save()
+        return self.favorites
+
+    def get_favortiters(self):
+        favoriters = Activity.objects.filter(activity_type=Activity.FAVORITE,
+                                            question=self.pk)
+        return [favoriter for favoriter in favoriters]
+
+    def calculate_vote(self):
+        up_votes = Activity.objects.filter(activity_type=Activity.UP_VOTE,
+                                           question=self.pk).count()
+        down_votes = Activity.objects.filter(activity_type=Activity.DOWN_VOTE,
+                                             question=self.pk).count()
+        self.votes = up_votes - down_votes
+        self.save()
+        return self.votes
+
+    def get_up_voters(self):
+        voters = Activity.objects.filter(activity_type=Activity.UP_VOTE,
+                                        question=self.pk)
+        return [voter for voter in voters]
+
+    def get_down_voters(self):
+        voters = Activity.objects.filter(activity_type=Activity.DOWN_VOTE,
+                                         question=self.pk)
+        return [voter for voter in voters]
+
 
 @python_2_unicode_compatible
 class Answer(models.Model):

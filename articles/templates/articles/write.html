@@ -13,6 +13,8 @@
     </ol>
     <form action="{% url 'write' %}" method="post" role="form">
         {% csrf_token %}
+
+
         {{ form.status }}
         {% for field in form.visible_fields %}
             <div class="form-group{% if field.errors %} has-error {% endif %}">
@@ -38,6 +40,8 @@
     </form>
 
     <div class="modal fade" id="preview">
+
+
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

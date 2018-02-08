@@ -17,7 +17,7 @@ def _articles(request, articles):
     paginator = Paginator(articles, 10)
     page = request.GET.get('page')
     try:
-        article = paginator.page(page)
+        articles = paginator.page(page)
 
     except PageNotAnInteger:
         articles = paginator.page(1)
@@ -40,7 +40,7 @@ class CreateArticle(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.create_user = self.request.user
-        return super(CreateArticle, self).form_invalid(form)
+        return super(CreateArticle, self).form_valid(form)
 
 
 class EditArticle(LoginRequiredMixin, UpdateView):
@@ -55,6 +55,7 @@ def articles(request):
     all_articles = Article.get_published()
     return _articles(request, all_articles)
 
+
 @login_required
 def article(request, slug):
     article = get_object_or_404(Article, slug=slug, status=Article.PUBLISHED)
@@ -63,7 +64,7 @@ def article(request, slug):
 
 @login_required
 def tag(request, tag_name):
-    articles = Article.objects.filter(tags__name=tag_name).filter(status="P")
+    articles = Article.objects.filter(tags__name=tag_name).filter(status='P')
     return _articles(request, articles)
 
 
@@ -80,7 +81,7 @@ def preview(request):
     try:
         if request.method == 'POST':
             content = request.POST.get('content')
-            html = "Nothing to display:("
+            html = "Nothing to display :("
             if len(content.strip()) > 0:
                 html = markdown.markdown(content, safe_mode='escape')
             return HttpResponse(html)
@@ -92,3 +93,28 @@ def preview(request):
         return HttpResponseBadRequest()
 
 
+@login_required
+@ajax_required
+def comment(request):
+    try:
+        if request.method == 'POST':
+            article_id = request.POST.get('article')
+            article = Article.objects.get(pk=article_id)
+            comment = request.POST.get('comment')
+            comment = comment.strip()
+            if len(comment) > 0:
+                article_comment = ArticleComment(user=request.user,
+                                                 article=article,
+                                                 comment=comment)
+                article_comment.save()
+            html = ''
+            for comment in article.get_comments():
+                html = '{0}{1}'.format(html, render_to_string(
+                    'articles/partial_article_comment.html',
+                    {'comment': comment}))
+            return HttpResponse(html)
+        else:
+            return HttpResponseBadRequest()
+
+    except Exception:
+        return HttpResponseBadRequest()

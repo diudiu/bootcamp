@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'core',
     'feeds',
     'questions',
+    'search',
     'taggit',
 ]
 
@@ -144,3 +145,6 @@ STATICFILES_DIRS = (
 )
 
 ALLOWED_SIGNUP_DOMAINS = ['*']
+
+from uuslug import slugify
+AUTOSLUG_SLUGIFY_FUNCTION = slugify
